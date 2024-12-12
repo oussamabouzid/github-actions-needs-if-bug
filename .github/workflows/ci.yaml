@@ -11,7 +11,7 @@ jobs:
       - run: echo ${{ github.job }}
 
   skips:
-    if: false
+    if: true
     runs-on: ubuntu-latest
     steps:
       - run: echo ${{ github.job }}
@@ -44,8 +44,7 @@ jobs:
   always-and-no-skips-or-failures:
     needs: [runs, runs-with-skipped-upstream]
     if: |
-      always()
-      && !contains(needs.*.result, 'skipped')
+      !contains(needs.*.result, 'skipped')
       && !contains(needs.*.result, 'failure')
     runs-on: ubuntu-latest
     steps:
