@@ -1,0 +1,63 @@
+name: ci
+
+on:
+  pull_request: null
+  workflow_dispatch: null
+
+jobs:
+  runs:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ github.job }}
+
+  skips:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ github.job }}
+
+  runs-with-skipped-upstream:
+    needs: skips
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ github.job }}
+
+  always-and-no-skips:
+    needs: [runs, runs-with-skipped-upstream]
+    if: |
+      always()
+      && !contains(needs.*.result, 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ github.job }}
+
+  always-and-no-failures:
+    needs: [runs, runs-with-skipped-upstream]
+    if: |
+      always()
+      && !contains(needs.*.result, 'failure')
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ github.job }}
+
+  always-and-no-skips-or-failures:
+    needs: [runs, runs-with-skipped-upstream]
+    if: |
+      always()
+      && !contains(needs.*.result, 'skipped')
+      && !contains(needs.*.result, 'failure')
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ github.job }}
+
+  debug-print:
+    needs: [runs, runs-with-skipped-upstream]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "toJSON(needs) = ${{ toJSON(needs) }}"
+          echo "toJSON(needs.*.result) = ${{ toJSON(needs.*.result) }}"
+          echo "!contains(needs.*.result, 'skipped') = ${{ !contains(needs.*.result, 'skipped') }}"
+          echo "!contains(needs.*.result, 'failure') = ${{ !contains(needs.*.result, 'failure') }}"
