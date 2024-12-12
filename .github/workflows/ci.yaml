@@ -14,7 +14,9 @@ jobs:
     if: true
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{ github.job }}
+      - run: |
+          exit 1
+          echo ${{ github.job }}
 
   runs-with-skipped-upstream:
     needs: skips
